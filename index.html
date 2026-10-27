@@ -402,14 +402,16 @@ document.getElementById('sendCopyBtn').addEventListener('click', async () => {
    so the iframe grows and shrinks with the quiz and the report (pmiScorecardHeight). */
 (function(){
   if (window.parent === window) return;
-  var last = 0;
   function send(){
     var h = Math.ceil(document.body.getBoundingClientRect().height);
-    if (h && h !== last) { last = h; window.parent.postMessage({ pmiScorecardHeight: h }, "*"); }
+    if (h) window.parent.postMessage({ pmiScorecardHeight: h }, "*");
   }
+  /* Re-send every second too: if this page loads before the parent's listener
+     is ready (cached reloads), the first messages are lost. */
   if (window.ResizeObserver) new ResizeObserver(send).observe(document.body);
   window.addEventListener("load", send);
   document.addEventListener("click", function(){ setTimeout(send, 50); });
+  setInterval(send, 1000);
   send();
 })();
 </script>
