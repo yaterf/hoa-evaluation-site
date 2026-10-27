@@ -1,23 +1,417 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HOA Manager Evaluation Scorecard | PMI Upstate SC</title>
 <style>
-  body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#fff;color:#222;display:flex;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:24px}
-  h1{font-size:22px;margin:0 0 8px}
-  p{margin:0;color:#555}
+  :root{
+    --black:#000000; --orange:#FF6D00; --white:#FFFFFF;
+    --grey:#F4F4F4; --line:#E2E2E2; --text:#1a1a1a; --muted:#6b6b6b;
+    --good:#1f8a4c; --warn:#FF6D00; --bad:#c0392b;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--white);color:var(--text);}
+  .wrap{max-width:760px;margin:0 auto;padding:0 20px 80px;}
+  header{padding:28px 0 20px;border-bottom:4px solid var(--black);margin-bottom:24px;}
+  .logo-row{margin-bottom:16px;}
+  .logo-img{height:48px;width:auto;display:block;}
+  .trust-line{font-size:0.75rem;color:var(--muted);margin-bottom:14px;}
+  .eyebrow{text-transform:uppercase;letter-spacing:0.12em;font-size:0.7rem;color:var(--orange);font-weight:700;margin-bottom:6px;}
+  h1{font-size:1.7rem;margin:0 0 8px;font-weight:800;letter-spacing:-0.01em;}
+  p.lead{font-size:0.95rem;color:var(--muted);line-height:1.6;margin:0;}
+  .card{background:var(--white);border:1px solid var(--line);border-radius:6px;padding:24px;margin-bottom:18px;}
+  label{display:block;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--black);margin:14px 0 5px;font-weight:700;}
+  label:first-child{margin-top:0;}
+  input,textarea{width:100%;font-size:0.95rem;padding:10px 12px;border:1.5px solid var(--line);border-radius:4px;background:var(--grey);color:var(--text);font-family:inherit;}
+  textarea{resize:vertical;min-height:70px;}
+  input:focus,textarea:focus{outline:none;border-color:var(--orange);}
+  .microcopy{font-size:0.72rem;color:var(--muted);margin-top:4px;}
+  .btn{margin-top:18px;width:100%;background:var(--black);color:var(--white);border:none;padding:14px;font-weight:700;font-size:0.9rem;border-radius:4px;cursor:pointer;letter-spacing:0.01em;}
+  .btn:hover{background:var(--orange);}
+  .btn.secondary{background:var(--white);color:var(--black);border:1.5px solid var(--black);}
+  .btn.secondary:hover{background:var(--grey);}
+  .section-header{font-size:0.78rem;text-transform:uppercase;letter-spacing:0.08em;font-weight:800;color:var(--orange);margin:26px 0 4px;padding-top:14px;border-top:2px solid var(--black);}
+  .section-header:first-child{margin-top:0;padding-top:0;border-top:none;}
+  .q{border-bottom:1px solid var(--line);padding:18px 0;}
+  .q:last-child{border-bottom:none;}
+  .qtitle{font-weight:700;margin-bottom:4px;font-size:0.98rem;}
+  .qwhy{font-size:0.8rem;color:var(--muted);margin-bottom:10px;}
+  .opts label{display:flex;align-items:center;gap:9px;font-size:0.9rem;color:var(--text);font-weight:400;text-transform:none;letter-spacing:0;margin:7px 0;cursor:pointer;}
+  .opts input[type=radio]{width:auto;accent-color:var(--orange);}
+  .portal-field{margin-top:10px;}
+  .portal-field label{font-size:0.7rem;margin:0 0 4px;}
+  .portal-field input{background:var(--white);}
+  .progress-wrap{position:sticky;top:0;background:var(--white);padding:10px 0;z-index:10;border-bottom:1px solid var(--line);margin-bottom:6px;}
+  .progress-bar-bg{width:100%;height:6px;background:var(--grey);border-radius:3px;overflow:hidden;}
+  .progress-bar-fill{height:100%;background:var(--orange);width:0%;transition:width 0.2s ease;}
+  .progress-label{font-size:0.75rem;color:var(--muted);margin-top:5px;text-align:right;}
+  #resultScreen{display:none;}
+  .scoreBig{font-size:3.2rem;font-weight:800;color:var(--black);text-align:center;margin:0;}
+  .scoreLabel{text-align:center;font-size:0.85rem;color:var(--muted);margin-bottom:10px;}
+  .band{text-align:center;font-weight:700;padding:12px;border-radius:4px;margin-bottom:10px;font-size:0.92rem;}
+  .band.good{background:#e9f7ee;color:var(--good);}
+  .band.warn{background:#fff1e5;color:var(--orange);}
+  .band.bad{background:#fbeaea;color:var(--bad);}
+  .next-step{text-align:center;font-size:0.85rem;color:var(--text);background:var(--grey);padding:10px;border-radius:4px;margin-bottom:16px;}
+  .breakdown-section-title{font-weight:800;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--black);margin:18px 0 4px;}
+  .breakdown-row{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:0.85rem;}
+  .breakdown-row:last-child{border-bottom:none;}
+  .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px;flex-shrink:0;}
+  .dot.good{background:var(--good);} .dot.warn{background:var(--orange);} .dot.bad{background:var(--bad);}
+  .cta{margin-top:24px;padding:20px;background:var(--black);color:var(--white);border-radius:6px;text-align:center;}
+  .cta a{color:var(--orange);font-weight:700;text-decoration:none;}
+  .cta a:hover{text-decoration:underline;}
+  .board-box{margin-top:18px;padding:16px;background:var(--grey);border-radius:4px;border:1px dashed var(--line);}
+  .board-box .microcopy{margin-top:8px;line-height:1.5;font-size:0.78rem;}
+  @media print{
+    .progress-wrap, .btn, #quizScreen, .cta, header .trust-line, #leadCard { display:none !important; }
+    body{ font-size:12px; }
+  }
 </style>
 </head>
 <body>
-  <div>
+<div class="wrap">
+  <header>
+    <div class="logo-row">
+      <img class="logo-img" src="data:image/png;base64,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" alt="PMI Upstate SC">
+    </div>
+    <div class="trust-line">Managed by CMCA-certified professionals. Serving HOA communities across the Upstate.</div>
+    <div class="eyebrow">Free Toolkit</div>
     <h1>HOA Manager Evaluation Scorecard</h1>
-    <p>Coming soon from PMI Upstate SC.</p>
+    <p class="lead">Most HOA managers go years without ever really being evaluated. Sometimes it's because the developer put them there and nobody revisited it. Sometimes it's because boards don't realize they can expect more, or because getting a real answer or a working phone number from their manager has always been a struggle. This quick scorecard gives you an honest read on how things actually stand, in about five minutes, whether your community has transitioned to board control or not.</p>
+  </header>
+
+  <div class="progress-wrap">
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+    <div class="progress-label" id="progressLabel">0 of 10 answered</div>
   </div>
+
+  <div id="quizScreen"></div>
+
+  <div id="resultScreen" class="card">
+    <p class="scoreBig" id="scoreBig">--</p>
+    <p class="scoreLabel">out of <span id="maxScoreLabel"></span></p>
+    <div id="bandBox" class="band"></div>
+    <div id="nextStepBox" class="next-step"></div>
+    <p class="lead" style="font-size:0.82rem;margin-bottom:16px;">Your score is based on your answers to the <span id="qCountLabel1"></span> questions above.</p>
+
+    <div id="teaserBox" style="border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:16px 0;margin-bottom:6px;">
+      <p style="margin:0 0 8px;font-weight:700;font-size:0.85rem;">One thing that stood out:</p>
+      <div id="teaserItem" style="font-size:0.9rem;"></div>
+    </div>
+    <p class="lead" style="font-size:0.82rem;font-style:italic;">That's one finding out of <span id="qCountLabel2"></span>. See the full breakdown, plus our take on each area that scored low, in your full report below.</p>
+
+    <div class="card" id="leadCard" style="margin-top:16px;border:1.5px solid var(--line);">
+      <p class="lead" style="margin-top:0;"><strong>Get your full report.</strong> Every question, your full score breakdown, and PMI Upstate SC's take on anything that scored low, sent to you so we can follow up if it looks like we can help.</p>
+      <label for="lName">Your name</label>
+      <input id="lName" type="text" placeholder="Jane Smith">
+      <label for="lEmail">Email</label>
+      <input id="lEmail" type="email" placeholder="jane@email.com">
+      <div class="microcopy">We will never spam you or sell your info. Just your results, and a chance to talk if it looks like we can help.</div>
+      <label for="lCommunity">Your community name</label>
+      <input id="lCommunity" type="text" placeholder="e.g. Willow Creek HOA">
+      <label for="lComments">Anything else about your experience with your manager you would like to share? (optional)</label>
+      <textarea id="lComments" placeholder="Optional"></textarea>
+
+      <div class="board-box">
+        <label style="margin-top:0;">Board member contact (optional)</label>
+        <p class="microcopy" style="margin-top:0;margin-bottom:10px;">If you know a board member who could act on this, you're welcome to share their info below. This isn't required, but it's one of the most helpful things you can do for your community: it lets us share these results directly with the people who actually have the authority to make a change, instead of the concern stopping with just one homeowner.</p>
+        <label for="bName">Board member name</label>
+        <input id="bName" type="text" placeholder="Optional">
+        <label for="bEmail">Board member email</label>
+        <input id="bEmail" type="email" placeholder="Optional">
+        <label for="bPhone">Board member phone</label>
+        <input id="bPhone" type="tel" placeholder="Optional">
+      </div>
+
+      <button class="btn" id="sendCopyBtn">Unlock My Full Report</button>
+      <p id="sentConfirm" style="display:none;font-size:0.85rem;color:var(--good);margin-top:10px;font-weight:600;">Thanks. Your full report is below, and we'll be in touch if it looks like we can help.</p>
+    </div>
+
+    <div id="fullReportBox" style="display:none;">
+      <div id="breakdownBox" style="margin-top:8px;"></div>
+      <div id="pmiResponseBox" class="card" style="margin-top:20px;border:1.5px solid var(--orange);background:#fff8f2;"></div>
+      <button class="btn secondary" id="printBtn" style="margin-top:14px;">Print / Save as PDF</button>
+    </div>
+
+    <div class="cta">
+      Whatever your score, a management relationship should hold up to this kind of review.<br>
+      <a href="#">Have questions about what you found? PMI Upstate SC is happy to talk. No pressure, no pitch.</a>
+    </div>
+  </div>
+</div>
+
 <script>
-  try { parent.postMessage({ pmiScorecardHeight: document.documentElement.scrollHeight }, "*"); } catch (e) {}
+/* ================================================================
+   INTEGRATION NOTES FOR DEVELOPER (Taylor):
+   This file is fully standalone. No Claude-specific APIs are used.
+   The one thing that needs wiring for production:
+
+   1. SUBMIT_ENDPOINT below should point to a real backend route that:
+      - Accepts a POST with JSON body (see the `entry` object in the
+        submit handler near the bottom of this script)
+      - Stores the lead (name, email, community, comments, score,
+        breakdown, portal name, and the optional board member fields)
+        in your actual database / CRM
+      - Optionally triggers an email to the submitter with their
+        results, and a notification to the PMI team
+
+   2. Until that endpoint exists, the form still works: it shows the
+      full report client-side regardless of whether the network
+      request succeeds, and logs the lead to the browser console as
+      a fallback so nothing is silently lost during testing.
+
+   3. Recommended: flag any submission with score below 50% of max
+      as a high-priority lead in whatever system receives this data.
+
+   4. If a board member's contact info is included, flag that lead
+      for direct outreach to the board member as well as the
+      submitter. That's the more decision-ready contact.
+
+   5. The portal-name question (index 2) scores itself: if the
+      person types a platform name containing "cinc" or "vantaca"
+      it auto-scores 10 (industry-leading platforms). Any other
+      name entered auto-scores 5 (functional, but not top-tier). If
+      left blank, it falls back to whatever the radio buttons say.
+   ================================================================ */
+const SUBMIT_ENDPOINT = "/api/scorecard-leads"; // TODO(Taylor): point to real backend route
+
+const QUESTIONS = [
+  // ---- Qualifications ----
+  {section:"Qualifications", q:"Does your manager hold a professional certification, such as CMCA (Certified Manager of Community Associations)?", why:"South Carolina doesn't actually require any certification to manage an HOA. That means some managers are only handling day-to-day paperwork without real training, and may not know how to properly handle a serious legal, financial, or insurance issue when one comes up.",
+   opts:[{label:"Yes, holds CMCA or an equivalent certification",pts:10},{label:"Not sure",pts:5},{label:"No certification that we know of",pts:0}]},
+
+  // ---- Service ----
+  {section:"Service", q:"How quickly does your manager typically respond to requests?", why:"Within 48 hours on a business day is a reasonable standard to expect.",
+   opts:[{label:"Usually within 48 business hours",pts:10},{label:"Sometimes slower than 48 business hours",pts:5},{label:"Often takes several days or longer",pts:0}]},
+  {section:"Service", q:"How often does your manager physically visit your community?", why:"A monthly visit is the standard for catching small problems before they grow.",
+   opts:[{label:"At least once a month",pts:10},{label:"A few times a year, but not monthly",pts:5},{label:"Rarely or never",pts:0}]},
+  {section:"Service", q:"Do you have an easy-to-use online portal for documents and payments?", why:"This is basic, modern infrastructure most communities now expect. If you know the name of your platform, list it below; it helps sharpen this part of your score.",
+   opts:[{label:"Yes, and it works well",pts:10},{label:"It exists, but it's outdated or limited",pts:5},{label:"No portal at all",pts:0}],
+   portalField:true},
+
+  // ---- Money & Contracts ----
+  {section:"Money & Contracts", q:"Do you get clear, regular financial statements?", why:"Clear financials are one of the most basic things a manager should provide.",
+   opts:[{label:"Yes, monthly and easy to read",pts:10},{label:"Sometimes, but hard to follow",pts:5},{label:"Rarely or never",pts:0}]},
+  {section:"Money & Contracts", q:"Does your manager get multiple bids before hiring vendors for big projects?", why:"At least 2 to 3 competitive bids helps make sure your community isn't overpaying.",
+   opts:[{label:"Yes, typically gets 2 to 3 bids or more",pts:10},{label:"Sometimes gets a second opinion, but not consistently",pts:5},{label:"No, same vendor every time without comparison",pts:0}]},
+  {section:"Money & Contracts", q:"Are you or your board familiar with your management contract's terms, like termination, automatic renewal, and extra fees?", why:"Many boards inherited this contract from the developer and never reviewed the details themselves.",
+   opts:[{label:"Very familiar with all of these terms",pts:10},{label:"Familiar with some, but not all",pts:5},{label:"Not familiar with these terms at all",pts:0}]},
+
+  // ---- Relationship ----
+  {section:"Relationship", q:"Has your point of contact stayed the same over time, and do most homeowners actually know who your manager is?", why:"Frequent turnover and a manager nobody recognizes are both signs your community isn't getting personal attention.",
+   opts:[{label:"Stable contact, and well known by homeowners",pts:10},{label:"Some turnover or limited recognition, but not both",pts:5},{label:"Frequent turnover and largely unknown to homeowners",pts:0}]},
+
+  // ---- Independence ----
+  {section:"Independence", q:"Has your board ever formally chosen or reviewed this manager, or is it still just whoever the developer assigned?", why:"If you haven't transitioned yet, that's normal. Once you have, it's worth an actual review.",
+   opts:[{label:"Our board has formally chosen or reviewed them",pts:10},{label:"We haven't transitioned yet",pts:5},{label:"We've transitioned, but never formally reviewed this",pts:0}]},
+  {section:"Independence", q:"Have your community's vendor contracts, like landscaping or maintenance, ever been reviewed since the developer first set them up?", why:"If these are never reevaluated, your community could be paying above or below market rate without knowing it.",
+   opts:[{label:"Reviewed and confirmed to be fairly priced",pts:10},{label:"Not sure, or never reviewed",pts:5},{label:"Still the original developer-set vendors, never reviewed",pts:0}]}
+];
+
+const PMI_RESPONSES = [
+  "Every PMI Upstate SC manager holds CMCA certification, so your community gets a genuine professional, not just administrative support.",
+  "We commit to responding within 48 business hours, and we track it to make sure that standard actually holds.",
+  "Our managers visit every community at least once a month, not just when there's a problem.",
+  "Every community we manage gets a modern, easy-to-use portal for documents, financials, and communication.",
+  "Clear, monthly financial statements come standard with every community we manage.",
+  "We get at least 2 to 3 competitive bids on major vendor contracts to keep costs fair for the association.",
+  "We walk every board through our contract in plain language, including termination, renewal, and fees, before anyone signs.",
+  "We prioritize staff continuity, and our managers make it a point to genuinely be known by name in the communities they serve.",
+  "We're hired directly by boards, never assigned by a developer. Every relationship with us starts as an actual choice.",
+  "We regularly reevaluate vendor contracts so our communities are never stuck paying outdated, developer-set pricing."
+];
+
+let quizTotal = 0, quizBreakdown = [];
+renderQuiz();
+document.getElementById('qCountLabel1').textContent = QUESTIONS.length;
+document.getElementById('qCountLabel2').textContent = QUESTIONS.length;
+
+function renderQuiz(){
+  const el = document.getElementById('quizScreen');
+  let html = '<div class="card" id="quizCard">';
+  let currentSection = null;
+  QUESTIONS.forEach((item, i) => {
+    if(item.section !== currentSection){
+      html += `<div class="section-header">${item.section}</div>`;
+      currentSection = item.section;
+    }
+    html += `<div class="q"><div class="qtitle">${i+1}. ${item.q}</div><div class="qwhy">${item.why}</div><div class="opts">`;
+    item.opts.forEach(opt => {
+      html += `<label><input type="radio" name="q${i}" value="${opt.pts}" data-qindex="${i}"> ${opt.label}</label>`;
+    });
+    html += `</div>`;
+    if(item.portalField){
+      html += `<div class="portal-field"><label for="portalNameInput">What portal or software do you use, if you know? (optional)</label><input id="portalNameInput" type="text" placeholder="e.g. CINC, Vantaca, or another platform"></div>`;
+    }
+    html += `</div>`;
+  });
+  html += '</div><button class="btn" id="submitQuizBtn">See My Score</button>';
+  el.innerHTML = html;
+  document.getElementById('submitQuizBtn').addEventListener('click', submitQuiz);
+  el.querySelectorAll('input[type=radio]').forEach(r => r.addEventListener('change', updateProgress));
+}
+
+function updateProgress(){
+  const answered = new Set();
+  document.querySelectorAll('#quizScreen input[type=radio]:checked').forEach(r => answered.add(r.dataset.qindex));
+  const pct = Math.round((answered.size / QUESTIONS.length) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = `${answered.size} of ${QUESTIONS.length} answered`;
+}
+
+function submitQuiz(){
+  let total = 0, answered = 0;
+  const breakdown = [];
+  QUESTIONS.forEach((item, i) => {
+    const sel = document.querySelector(`input[name="q${i}"]:checked`);
+    let pts = sel ? parseInt(sel.value) : 0;
+    if(sel) answered++;
+    if(item.portalField){
+      const portalInput = document.getElementById('portalNameInput');
+      const portalName = portalInput ? portalInput.value.trim() : '';
+      if(portalName){
+        pts = /cinc|vantaca/i.test(portalName) ? 10 : 5;
+        answered = sel ? answered : answered + 1;
+      }
+    }
+    total += pts;
+    breakdown.push({q:item.q, pts, index:i, section:item.section});
+  });
+  if(answered < QUESTIONS.length){
+    if(!confirm(`You've only answered ${answered} of ${QUESTIONS.length} questions. Unanswered questions count as zero. See your score anyway?`)) return;
+  }
+  quizTotal = total; quizBreakdown = breakdown;
+  document.getElementById('quizScreen').style.display = 'none';
+  document.querySelector('.progress-wrap').style.display = 'none';
+  showResults(total, breakdown);
+}
+
+function showResults(total, breakdown){
+  const maxPossible = QUESTIONS.reduce((sum, item) => sum + Math.max(...item.opts.map(o => o.pts)), 0);
+  document.getElementById('resultScreen').style.display = 'block';
+  document.getElementById('scoreBig').textContent = total;
+  document.getElementById('maxScoreLabel').textContent = maxPossible;
+  const bandBox = document.getElementById('bandBox');
+  const nextStepBox = document.getElementById('nextStepBox');
+  let bandClass, bandText, nextStep;
+  const pct = total / maxPossible;
+  if(pct >= 0.8){
+    bandClass = 'good'; bandText = "Strong marks across the board. Sounds like solid, independent service.";
+    nextStep = "Next step: nice work. Worth a quick annual check-in with your manager to keep it that way.";
+  } else if(pct >= 0.5){
+    bandClass = 'warn'; bandText = "A mix of strengths and gaps. Worth raising the lower-scoring items directly with your manager.";
+    nextStep = "Next step: bring your lowest-scoring items to your manager directly this month and see how they respond.";
+  } else {
+    bandClass = 'bad'; bandText = "Several areas fell short. This may be worth a closer look, and a conversation with your board.";
+    nextStep = "Next step: worth requesting a copy of your management contract and reviewing it with your board soon.";
+  }
+  bandBox.className = 'band ' + bandClass;
+  bandBox.textContent = bandText;
+  nextStepBox.textContent = nextStep;
+
+  const sorted = [...breakdown].sort((a,b) => a.pts - b.pts);
+  const worst = sorted[0];
+  const teaserItem = document.getElementById('teaserItem');
+  if(worst && worst.pts < 10){
+    const dotClass = worst.pts >= 5 ? 'warn' : 'bad';
+    teaserItem.innerHTML = `<span class="dot ${dotClass}" style="display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px;"></span>${worst.q} (scored ${worst.pts}/10)`;
+  }else{
+    teaserItem.innerHTML = `Every question scored well. A strong sign across the board.`;
+  }
+
+  window.scrollTo({top: document.getElementById('resultScreen').offsetTop - 20, behavior:'smooth'});
+}
+
+function revealFullReport(breakdown){
+  const breakdownBox = document.getElementById('breakdownBox');
+  breakdownBox.innerHTML = '';
+  let currentSection = null;
+  breakdown.forEach(item => {
+    if(item.section !== currentSection){
+      const sectionTitle = document.createElement('div');
+      sectionTitle.className = 'breakdown-section-title';
+      sectionTitle.textContent = item.section;
+      breakdownBox.appendChild(sectionTitle);
+      currentSection = item.section;
+    }
+    const dotClass = item.pts >= 10 ? 'good' : item.pts >= 5 ? 'warn' : 'bad';
+    const row = document.createElement('div');
+    row.className = 'breakdown-row';
+    row.innerHTML = `<span><span class="dot ${dotClass}"></span>${item.q}</span><span>${item.pts}/10</span>`;
+    breakdownBox.appendChild(row);
+  });
+
+  const weakAreas = [...breakdown].filter(b => b.pts < 10).sort((a,b) => a.pts - b.pts).slice(0,3);
+  const pmiBox = document.getElementById('pmiResponseBox');
+  if(weakAreas.length > 0){
+    const responses = weakAreas.map(w => '<li>' + PMI_RESPONSES[w.index] + '</li>').join('');
+    pmiBox.innerHTML = `<p style="margin:0 0 8px;font-weight:700;font-size:0.85rem;">How PMI Upstate SC approaches this:</p><ul style="margin:0;padding-left:18px;font-size:0.88rem;line-height:1.6;">${responses}</ul>`;
+  }else{
+    pmiBox.innerHTML = `<p style="margin:0;font-size:0.88rem;">Strong marks across the board. For what it's worth, this is the same standard we hold ourselves to at PMI Upstate SC.</p>`;
+  }
+
+  document.getElementById('fullReportBox').style.display = 'block';
+  document.getElementById('teaserBox').style.display = 'none';
+}
+
+document.getElementById('printBtn').addEventListener('click', () => window.print());
+
+document.getElementById('sendCopyBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('sendCopyBtn');
+  const name = document.getElementById('lName').value.trim();
+  const email = document.getElementById('lEmail').value.trim();
+  const community = document.getElementById('lCommunity').value.trim();
+  const comments = document.getElementById('lComments').value.trim();
+  const boardName = document.getElementById('bName').value.trim();
+  const boardEmail = document.getElementById('bEmail').value.trim();
+  const boardPhone = document.getElementById('bPhone').value.trim();
+  const portalInputEl = document.getElementById('portalNameInput');
+  const portalName = portalInputEl ? portalInputEl.value.trim() : '';
+  if(!name || !email){ alert('Please enter your name and email so we know where to send it.'); return; }
+  btn.disabled = true; btn.textContent = 'Unlocking...';
+
+  const maxPossible = QUESTIONS.reduce((sum, item) => sum + Math.max(...item.opts.map(o => o.pts)), 0);
+  const entry = {
+    name, email, community, comments, portalName,
+    boardMemberName: boardName, boardMemberEmail: boardEmail, boardMemberPhone: boardPhone,
+    score: quizTotal, maxScore: maxPossible,
+    highPriority: (quizTotal / maxPossible) < 0.5,
+    breakdown: quizBreakdown,
+    date: new Date().toISOString().slice(0,10)
+  };
+
+  try{
+    await fetch(SUBMIT_ENDPOINT, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(entry)
+    });
+  }catch(e){
+    console.warn('Submit endpoint not yet wired up. Lead captured locally only:', entry);
+  }
+
+  document.getElementById('sentConfirm').style.display = 'block';
+  btn.textContent = 'Unlocked!';
+  revealFullReport(quizBreakdown);
+});
+</script>
+<script>
+/* Added for the pmiupstatesc.com embed: tell the parent page how tall the form is,
+   so the iframe grows and shrinks with the quiz and the report (pmiScorecardHeight). */
+(function(){
+  if (window.parent === window) return;
+  var last = 0;
+  function send(){
+    var h = Math.ceil(document.body.getBoundingClientRect().height);
+    if (h && h !== last) { last = h; window.parent.postMessage({ pmiScorecardHeight: h }, "*"); }
+  }
+  if (window.ResizeObserver) new ResizeObserver(send).observe(document.body);
+  window.addEventListener("load", send);
+  document.addEventListener("click", function(){ setTimeout(send, 50); });
+  send();
+})();
 </script>
 </body>
 </html>
