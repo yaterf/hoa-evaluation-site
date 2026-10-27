@@ -175,7 +175,7 @@
       name entered auto-scores 5 (functional, but not top-tier). If
       left blank, it falls back to whatever the radio buttons say.
    ================================================================ */
-const SUBMIT_ENDPOINT = "/api/scorecard-leads"; // TODO(Taylor): point to real backend route
+const SUBMIT_ENDPOINT = "https://script.google.com/macros/s/AKfycbwOp8Q1QBdLbxTNFIJGkYe88jHeL0qk8OaaQ8n04xK7irDa8O9MijFJk6AkS16DrO0T/exec"; // Apps Script relay -> LeadSimple new-lead email (see relay/)
 
 const QUESTIONS = [
   // ---- Qualifications ----
@@ -385,7 +385,7 @@ document.getElementById('sendCopyBtn').addEventListener('click', async () => {
   try{
     await fetch(SUBMIT_ENDPOINT, {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      headers: {'Content-Type': 'text/plain;charset=utf-8'}, // plain text avoids a CORS preflight Apps Script can't answer
       body: JSON.stringify(entry)
     });
   }catch(e){
